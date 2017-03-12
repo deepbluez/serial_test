@@ -1,0 +1,4 @@
+greenlet>=0.4
+gevent>=1.2
+pyserial>=3
+pymodbus>=1.2

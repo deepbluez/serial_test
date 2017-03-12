@@ -1,0 +1,3 @@
+tty=COM2,9600,8,N,1; protocol=modbus; id=2;function=3;addr=1;count=3
+tty=COM2,9600,8,N,1; protocol=modbus; id=3;function=3;addr=1;count=5
+tty=COM4,9600,8,N,1; protocol=modbus; id=2;function=2;addr=2;count=7
