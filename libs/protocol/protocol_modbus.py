@@ -33,9 +33,15 @@ class ProtocolModbus(ProtocolBase):
         return self.message
 
     def validate_result(self, result):
-        self.framer.resetFrame()
-        self.framer.addToFrame(result)
-        return self.framer.checkFrame()
+        if not result:
+            self._add_no_response()
+        else:
+            self.framer.resetFrame()
+            self.framer.addToFrame(result)
+            if self.framer.checkFrame():
+                self._add_succeed()
+            else:
+                self._add_data_error()
 
 
 def create_protocol(args):

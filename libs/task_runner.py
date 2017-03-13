@@ -8,23 +8,25 @@
 import gevent
 import serial
 
+from fields import *
+
 
 class TaskRunner(object):
     def __init__(self, args, current_port):
         self.args = args
 
         # Serial read timeout, default 300ms
-        self.read_timeout = int(self.args.get('timeout')) if args.get('timeout') else 300
+        self.read_timeout = int(self.args.get(f_timeout)) if args.get(f_timeout) else 300
         # Serial port name, must specify from args
         self.serial_port = current_port
 
-        self.tests = self.args['ports'][current_port]
+        self.tests = self.args[f_ports][current_port]
         self.protocols = []
 
         self._load_protocol()
 
         self.serial = None
-
+        
     def start(self):
         def _parity(cfg):
             if cfg == 'E':
@@ -38,16 +40,16 @@ class TaskRunner(object):
             else:
                 return serial.PARITY_NONE
 
-        self.serial = serial.Serial(self.serial_port, self.tests['baudrate'], bytesize=self.tests['databits'],
-                                    parity=_parity(self.tests['parity']),
-                                    stopbits=self.tests['stopbits'], timeout=self.read_timeout / 1000.0)
+        self.serial = serial.Serial(self.serial_port, self.tests[f_baudrate], bytesize=self.tests[f_databits],
+                                    parity=_parity(self.tests[f_parity]),
+                                    stopbits=self.tests[f_stopbits], timeout=self.read_timeout / 1000.0)
         runner_thread = gevent.spawn(self._task_thread)
         return runner_thread
 
     def _load_protocol(self):
         import importlib
-        for test in self.tests['tests']:
-            module_name = '.protocol.protocol_' + test['protocol']
+        for test in self.tests[f_tests]:
+            module_name = '.protocol.protocol_' + test[f_protocol]
             protocol_module = importlib.import_module(module_name, 'libs')
             protocol_factory = getattr(protocol_module, 'create_protocol', None)
             self.protocols.append(protocol_factory(test))
@@ -57,5 +59,5 @@ class TaskRunner(object):
             for protocol in self.protocols:
                 self.serial.write(protocol.next_command())
                 result = self.serial.read(1024 * 1024)
-                print "%s is %r(%s)" % (self.serial_port, protocol.validate_result(result), result)
+                protocol.validate_result(result)
                 gevent.sleep(0)

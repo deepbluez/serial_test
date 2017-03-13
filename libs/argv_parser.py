@@ -15,6 +15,8 @@ import re
 import sys
 import argparse
 
+from fields import *
+
 
 class ArgvParser(object):
 
@@ -23,7 +25,7 @@ class ArgvParser(object):
 
     def __init__(self, argv=sys.argv):
         parser = argparse.ArgumentParser(description='串口测试程序')
-        parser.add_argument('ports', nargs='+', help='需要测试的端口和配置项')
+        parser.add_argument(f_ports, nargs='+', help='需要测试的端口和配置项')
         parser.add_argument('--timeout', nargs='?', help='全局超时设置，覆盖默认设置')
 
         args = parser.parse_args(argv)
@@ -31,8 +33,8 @@ class ArgvParser(object):
         self._process_args(args)
 
         self.args = {
-            'timeout': args.timeout,
-            'ports': self.actual_ports,
+            f_timeout: args.timeout,
+            f_ports: self.actual_ports,
         }
 
     def _process_args(self, args):
@@ -46,24 +48,24 @@ class ArgvParser(object):
         )} for p in args.ports]
 
         for port in ports:
-            if ',' not in port['tty']:
-                port['tty'] += ',9600,8,N,1'
+            if ',' not in port[f_tty]:
+                port[f_tty] += ',9600,8,N,1'
 
-            tty_full = port['tty'].split(',')
+            tty_full = port[f_tty].split(',')
             tty = tty_full[0]
 
             if tty not in self.actual_ports:
                 self.actual_ports[tty] = {
-                    'name': tty,
-                    'baudrate': int(tty_full[1]),
-                    'databits': int(tty_full[2]),
-                    'parity': tty_full[3],
-                    'stopbits': int(tty_full[4]),
-                    'tests': [port]
+                    f_name: tty,
+                    f_baudrate: int(tty_full[1]),
+                    f_databits: int(tty_full[2]),
+                    f_parity: tty_full[3],
+                    f_stopbits: int(tty_full[4]),
+                    f_tests: [port]
                 }
             else:
-                self.actual_ports[tty]['tests'].append(port)
-            del port['tty']
+                self.actual_ports[tty][f_tests].append(port)
+            del port[f_tty]
 
 
 if __name__ == '__main__':
