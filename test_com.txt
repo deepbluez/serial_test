@@ -1,3 +1,4 @@
 tty=COM3,9600,8,N,1; name=COM3_1; protocol=modbus; id=2;function=3;addr=1;count=3
 tty=COM3,9600,8,N,1; name=COM3_2; protocol=modbus; id=3;function=3;addr=1;count=5
-tty=COM5,9600,8,N,1; name=COM5_1; protocol=modbus; id=2;function=2;addr=2;count=7
+#tty=COM5,9600,8,N,1; name=COM5_1; protocol=modbus; id=2;function=2;addr=2;count=7
+tty=COM5,9600,8,N,1; name=COM5_1; protocol=raw; command="02 03 00 02 00 07 a5 fb"; validator_type=raw; validator="02 83 02 30 f1"

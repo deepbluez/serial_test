@@ -8,21 +8,37 @@
 
 """
 测试用例：
->>> ProtocolRaw({'command': 'H e l l o 20 57 6f 72 6C 64 !', 'validator_type': 'raw', 'validator': ''})._parse_hex_string('H e l l o 20 57 6f 72 6C 64 !')
+>>> ProtocolRaw({'command': '', 'validator_type': 'raw', 'validator': ''})._parse_hex_string('H e l l o 20 57 6f 72 6C 64 !')
 'Hello World!'
 
->>> raw = ProtocolRaw({'command': '123', 'validator_type': 'raw', 'validator': ''})
->>> raw.status.init_error
+>>> ProtocolRaw({'command': '123', 'validator_type': 'raw', 'validator': ''}).status.init_error
 "Cant't parse '123', invalid hex string!"
 
->>> ProtocolRaw({'command': '03 03 03 00 01 00 05', 'validator_type': 'regex', 'validator': '123[a-c]+'})._validate_regex('123abcccc')
+>>> ProtocolRaw({'command': '', 'validator_type': 'regex', 'validator': '123[a-c]+'})._validate_regex('123abcccc')
 True
->>> ProtocolRaw({'command': '03 03 03 00 01 00 05', 'validator_type': 'regex', 'validator': '123[a-c]+$'})._validate_regex('123abccccd')
+>>> ProtocolRaw({'command': '', 'validator_type': 'regex', 'validator': '123[a-c]+$'})._validate_regex('123abccccd')
 False
+
+>>> ProtocolRaw({'command': '', 'validator_type': 'length', 'validator': '3'})._validate_length('abc')
+True
+>>> ProtocolRaw({'command': '', 'validator_type': 'length', 'validator': '9'})._validate_length('abc')
+False
+
+>>> ProtocolRaw({'command': '', 'validator_type': 'raw', 'validator': '123'}).status.init_error
+"Cant't parse '123', invalid hex string!"
+>>> ProtocolRaw({'command': '', 'validator_type': 'raw', 'validator': '41 42 C'})._validate_raw('ABC')
+True
+>>> ProtocolRaw({'command': '', 'validator_type': 'raw', 'validator': '41 42 C'})._validate_raw('abcd')
+False
+
+>>> ProtocolRaw({'command': '', 'validator_type': 'wildcard', 'validator': 'A?C'})._validate_wildcard('ABC')
+True
+>>> ProtocolRaw({'command': '', 'validator_type': 'wildcard', 'validator': 'A?C'})._validate_wildcard('ABBC')
+False
+
 """
 
 import re
-import fnmatch
 
 from protocol_base import ProtocolBase
 from libs.fields import *
@@ -90,21 +106,21 @@ class ProtocolRaw(ProtocolBase):
         res = ''
         while i < n:
             c = pat[i]
-            i = i + 1
+            i += 1
             if c == '*':
-                res = res + '.*'
+                res += '.*'
             elif c == '?':
-                res = res + '.'
+                res += '.'
             elif c == '[':
                 j = i
                 if j < n and pat[j] == '!':
-                    j = j + 1
+                    j += 1
                 if j < n and pat[j] == ']':
-                    j = j + 1
+                    j += 1
                 while j < n and pat[j] != ']':
-                    j = j + 1
+                    j += 1
                 if j >= n:
-                    res = res + '\\['
+                    res += '\\['
                 else:
                     stuff = pat[i:j].replace('\\', '\\\\')
                     i = j + 1
