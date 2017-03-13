@@ -10,6 +10,7 @@ class ProtocolBase(object):
 
     class Status:
         def __init__(self):
+            self.init_error = None
             self.total = 0
             self.succeed = 0
             self.error_data = 0
