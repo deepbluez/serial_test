@@ -8,8 +8,8 @@
 import sys
 import gevent
 
-from gevent import monkey
-monkey.patch_all()
+#from gevent import monkey
+#monkey.patch_all()
 
 from libs.argv_parser import ArgvParser
 from libs.task_runner import TaskRunner
