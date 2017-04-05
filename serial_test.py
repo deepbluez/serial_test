@@ -19,6 +19,7 @@ from libs.thirdparty.termcolor2 import colored
 
 tasks = []
 threads = []
+verbose = False
 
 
 def show_status():
@@ -64,8 +65,9 @@ def show_status():
                             (protocol.status.no_response, protocol.status.no_response * 100 / total), 'magenta'),
                     '\n',
                 ])
-                result += '\n\n'.join(map(pretty_show_bytes, protocol.status.io_bytes))
-                result += '\n\n'
+                if verbose:
+                    result += '\n\n'.join(map(pretty_show_bytes, protocol.status.io_bytes))
+                    result += '\n\n'
                 protocol.status.io_bytes = []
         print(result)
         gevent.sleep(3)
@@ -73,8 +75,10 @@ def show_status():
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python serial_test.py <config_file>")
+        print("Usage: python serial_test.py <config_file> [-v|--verbose]")
         sys.exit(1)
+
+    verbose = True if '-v' in sys.argv or '--verbose' in sys.argv else verbose
 
     with open(sys.argv[1], 'r') as f:
         config_lines = [l for l in (l.strip() for l in f.readlines()) if l and not l.startswith('#')]
