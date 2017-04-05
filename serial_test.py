@@ -34,7 +34,7 @@ def show_status():
                 chr_line += b if 32 <= ord(b) < 127 else '.'
                 if (idx + 1) % 8 == 0 or (idx + 1) == len(io_bytes):
                     pad_spaces = '   ' * (0 if (idx + 1) % 8 == 0 else -((idx + 1) % 8 - 8)) +\
-                                 ('  ' if 0 < ((idx + 1) % 8) <= 4 else ('' if (idx + 1) % 8 == 0 else ' '))
+                                 ('  ' if 0 < ((idx + 1) % 8) < 4 else ('' if (idx + 1) % 8 == 0 else ' '))
                     r_ += pad_spaces + '   ' + chr_line
                     chr_line = ''
                     if (idx + 1) != len(io_bytes):
@@ -45,12 +45,13 @@ def show_status():
     while True:
         result = ''
         for task in tasks:
-            result += '%(name)s, %(baudrate)d, %(databits)d, %(parity)s, %(stopbits)d\n' % {
+            result += '%(name)s, %(baudrate)d, %(databits)d, %(parity)s, %(stopbits)d <%(open)s>\n' % {
                 f_name: task.tests[f_name],
                 f_baudrate: task.tests[f_baudrate],
                 f_databits: task.tests[f_databits],
                 f_parity: task.tests[f_parity],
                 f_stopbits: task.tests[f_stopbits],
+                'open': 'Opened' if task.serial.is_open else 'Closed',
             }
             for protocol in task.protocols:
                 total = protocol.status.total if protocol.status.total != 0 else 1

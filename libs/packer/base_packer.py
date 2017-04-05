@@ -7,7 +7,7 @@
 
 
 class BasePacker(object):
-    def __init__(self, seq_before, ):
+    def __init__(self, params, ):
         self.params = params
 
     def generate_command(self, cmdid=None):
