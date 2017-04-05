@@ -33,7 +33,7 @@ def show_status():
                 r_ += '%02X' % ord(b) + ('  ' if (idx + 1) % 4 == 0 else ' ')
                 chr_line += b if 32 <= ord(b) < 127 else '.'
                 if (idx + 1) % 8 == 0 or (idx + 1) == len(io_bytes):
-                    pad_spaces = '<.>' * (0 if (idx + 1) % 8 == 0 else -((idx + 1) % 8 - 8)) +\
+                    pad_spaces = '   ' * (0 if (idx + 1) % 8 == 0 else -((idx + 1) % 8 - 8)) +\
                                  ('  ' if 0 < ((idx + 1) % 8) <= 4 else ('' if (idx + 1) % 8 == 0 else ' '))
                     r_ += pad_spaces + '   ' + chr_line
                     chr_line = ''
