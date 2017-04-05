@@ -56,14 +56,14 @@ class ProtocolRaw(ProtocolBase):
     def next_command(self):
         return self.command
 
-    def validate_result(self, result):
+    def validate_result(self, command, result):
         if not result:
-            self._add_no_response()
+            self._add_no_response(command)
         else:
             if self.__validator_func(result):
-                self._add_succeed()
+                self._add_succeed(command, result)
             else:
-                self._add_data_error()
+                self._add_data_error(command, result)
 
     def _parse_hex_string(self, orig_text):
         result = ''

@@ -17,5 +17,7 @@ f_total = 'total'
 f_error_data = 'error_data'
 f_no_response = 'no_response'
 f_command = 'command'
+f_response = 'response'
 f_validator = 'validator'
 f_validator_type = 'validator_type'
+

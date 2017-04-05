@@ -57,7 +57,8 @@ class TaskRunner(object):
     def _task_thread(self):
         while True:
             for protocol in self.protocols:
-                self.serial.write(protocol.next_command())
+                next_command = protocol.next_command()
+                self.serial.write(next_command)
                 result = self.serial.read(1024 * 1024)
-                protocol.validate_result(result)
+                protocol.validate_result(next_command, result)
                 gevent.sleep(0)

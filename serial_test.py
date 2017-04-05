@@ -22,6 +22,25 @@ threads = []
 
 
 def show_status():
+    def pretty_show_bytes(item):
+        def format_hex(io_bytes, title):
+            if not io_bytes:
+                return '  %s ' % title + colored('<Empty>', 'red')
+            r_ = '  ' + title + '\n    '
+            chr_line = ''
+            for idx, b in enumerate(io_bytes):
+                r_ += '%02X' % ord(b) + ('  ' if (idx + 1) % 4 == 0 else ' ')
+                chr_line += b if 32 <= ord(b) < 127 else '.'
+                if (idx + 1) % 8 == 0 or (idx + 1) == len(io_bytes):
+                    pad_spaces = '<.>' * (0 if (idx + 1) % 8 == 0 else -((idx + 1) % 8 - 8)) +\
+                                 ('  ' if 0 < ((idx + 1) % 8) <= 4 else ('' if (idx + 1) % 8 == 0 else ' '))
+                    r_ += pad_spaces + '   ' + chr_line
+                    chr_line = ''
+                    if (idx + 1) != len(io_bytes):
+                        r_ += '\n    '
+            return r_
+
+        return format_hex(item[f_command], "Send:") + '\n' + format_hex(item[f_response], "Recv:")
     while True:
         result = ''
         for task in tasks:
@@ -35,7 +54,7 @@ def show_status():
             for protocol in task.protocols:
                 total = protocol.status.total if protocol.status.total != 0 else 1
                 result += ''.join([
-                    '    %s:' % colored(protocol.args[f_name]),
+                    '  %s:' % colored(protocol.args[f_name]),
                     'Total:%4d' % protocol.status.total,
                     colored(' Succeed:%4d(%3d%%)' %
                             (protocol.status.succeed, protocol.status.succeed * 100 / total), 'green'),
@@ -45,8 +64,11 @@ def show_status():
                             (protocol.status.no_response, protocol.status.no_response * 100 / total), 'magenta'),
                     '\n',
                 ])
+                result += '\n\n'.join(map(pretty_show_bytes, protocol.status.io_bytes))
+                result += '\n\n'
+                protocol.status.io_bytes = []
         print(result)
-        gevent.sleep(0)
+        gevent.sleep(3)
 
 
 if __name__ == '__main__':
