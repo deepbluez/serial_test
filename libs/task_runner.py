@@ -61,4 +61,4 @@ class TaskRunner(object):
                 self.serial.write(next_command)
                 result = self.serial.read(1024 * 1024)
                 protocol.validate_result(next_command, result)
-                gevent.sleep(0)
+                gevent.sleep(0.5)
